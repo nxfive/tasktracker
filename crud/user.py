@@ -40,3 +40,6 @@ class CrudUser:
 
     def delete_user(self, db: Session, *, user_id: int):
         user = db.query(self.model).filter_by(id=user_id).first()
+        setattr(user, "account", "deactivated")
+        db.commit()
+        return f"User {user.username} account has been deactivated"
