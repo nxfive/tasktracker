@@ -12,6 +12,9 @@ class CrudUser:
     def get_user_by_username(self, db: Session, *, username: str):
         return db.query(self.model).filter_by(username=username)
 
+    def get_all_users(self, db: Session):
+        return db.query(self.model).all()
+
     def create_user(self, db: Session, request: UserCreate):
         new_user = self.model(
             name=request.name,
@@ -34,3 +37,6 @@ class CrudUser:
         db.commit()
         db.refresh(user)
         return user
+
+    def delete_user(self, db: Session, *, user_id: int):
+        user = db.query(self.model).filter_by(id=user_id).first()
