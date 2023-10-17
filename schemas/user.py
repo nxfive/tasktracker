@@ -63,3 +63,12 @@ class UserUpdate(BaseModel):
         if "new_password" in values and "old_password" not in values:
             raise ValueError("Old password must be provided!")
         return values
+
+    class UserDisplay(BaseModel):
+        name: str
+        surname: str
+        username: str
+        email: EmailStr
+
+        class Config:
+            orm_mode: True
