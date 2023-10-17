@@ -64,11 +64,12 @@ class UserUpdate(BaseModel):
             raise ValueError("Old password must be provided!")
         return values
 
-    class UserDisplay(BaseModel):
-        name: str
-        surname: str
-        username: str
-        email: EmailStr
 
-        class Config:
-            orm_mode: True
+class UserDisplay(BaseModel):
+    name: str
+    surname: str
+    username: str
+    email: EmailStr
+
+    class Config:
+        orm_mode: True
