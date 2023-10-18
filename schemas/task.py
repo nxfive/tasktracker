@@ -19,8 +19,8 @@ class TaskCreate(BaseModel):
 
     title: str
     description: str
-    status: str
-    priority: str
+    status: str = Status.to_do
+    priority: str = Priority.low
 
     model_config = ConfigDict(
         extra="ignore",
