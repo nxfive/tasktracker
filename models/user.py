@@ -1,5 +1,6 @@
 from database.setup import Base
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship
 
 
 class DbUser(Base):
@@ -13,3 +14,4 @@ class DbUser(Base):
     password = Column(String)
     is_active = Column(Boolean, default=False)
     account = Column(String, default="active")
+    tasks = relationship("DbTask", back_populates="user")
