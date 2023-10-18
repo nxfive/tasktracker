@@ -43,3 +43,6 @@ class CrudUser:
         setattr(user, "account", "deactivated")
         db.commit()
         return f"User {user.username} account has been deactivated"
+
+
+crud_user = CrudUser()
