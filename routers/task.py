@@ -21,7 +21,7 @@ def get_all_tasks(db: Annotated[Session, Depends(get_db)], current_user: [UserBa
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_task(request: TaskCreate,
                 db: Annotated[Session, Depends(get_db)],
-                current_user: [UserBase, get_current_user]
+                current_user: [UserBase, Depends(get_current_user)]
                 ):
     return crud_task.create_task(db, request, user_id=current_user.id)
 
@@ -29,7 +29,7 @@ def create_task(request: TaskCreate,
 @router.patch("/update/{task_id}", status_code=status.HTTP_200_OK)
 def update_task(task_id: int, request: TaskUpdate,
                 db: Annotated[Session, Depends(get_db)],
-                current_user: [UserBase, get_current_user]
+                current_user: [UserBase, Depends(get_current_user)]
                 ):
     return crud_task.update_task(db, request, task_id=task_id, user_id=current_user.id)
 
@@ -37,6 +37,6 @@ def update_task(task_id: int, request: TaskUpdate,
 @router.delete("/delete/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(task_id: int,
                 db: Annotated[Session, Depends(get_db)],
-                current_user: [UserBase, get_current_user]
+                current_user: [UserBase, Depends(get_current_user)]
                 ):
     return crud_task.delete_task(db, task_id=task_id, user_id=current_user.id)
