@@ -56,3 +56,13 @@ class TaskUpdate(BaseModel):
                 priority: Priority = Form(default=None),
                 ):
         return cls(title=title, description=description, status=status, priority=priority)
+
+
+class TaskDisplay(BaseModel):
+    title: str
+    description: str
+    status: str
+    priority: str
+
+    class Config:
+        orm_mode = True
