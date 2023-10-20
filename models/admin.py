@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Enum
 from database.setup import Base
+from schemas.admin import Account
 
 
 class DbAdmin(Base):
@@ -11,4 +12,4 @@ class DbAdmin(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
     is_active = Column(Boolean)
-    account = Column(String)
+    account = Column(Enum(Account), default=Account.active)
