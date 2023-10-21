@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 
 
 class User(BaseModel):
@@ -20,3 +21,17 @@ class GroupUpdate(BaseModel):
     visibility: bool | None = None
     admins: List[User] | None = None
     members: List[User] | None = None
+
+
+class GroupDisplay(BaseModel):
+    name: str
+    description: str
+    visibility: bool
+    owner: User
+    admins: List[User]
+    members: List[User]
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True
