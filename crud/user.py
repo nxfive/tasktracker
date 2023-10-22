@@ -10,7 +10,7 @@ class CrudUser:
         self.model = DbUser
 
     def get_user_by_username(self, db: Session, *, username: str):
-        return db.query(self.model).filter_by(username=username)
+        return db.query(self.model).filter_by(username=username).first()
 
     def get_all_users(self, db: Session):
         return db.query(self.model).all()
