@@ -27,7 +27,7 @@ class DbGroup(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("DbUser", back_populates="owned_groups")
     admins = relationship("DbUser", secondary="group_admins", back_populates="admin_of_groups")
-    members = relationship("DbUser", secondary="group_users", back_populates="member_of_groups")
+    members = relationship("DbUser", secondary="group_members", back_populates="member_of_groups")
     visibility = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.utcnow())
