@@ -31,3 +31,4 @@ class DbGroup(Base):
     visibility = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow())
     updated_at = Column(DateTime, default=datetime.utcnow())
+    board = relationship("DbRemoteBoard", back_populates="group")
