@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, Enum
+from sqlalchemy import Column, Integer, String, Boolean, Enum, DateTime
 from database.setup import Base
 from schemas.admin import Account
+from datetime import datetime
 
 
 class DbAdmin(Base):
@@ -13,3 +14,5 @@ class DbAdmin(Base):
     password = Column(String)
     is_active = Column(Boolean)
     account = Column(Enum(Account), default=Account.active)
+    created_at = Column(DateTime, default=datetime.utcnow())
+    updated_at = Column(DateTime, default=datetime.utcnow(), onupdate=datetime.now())
