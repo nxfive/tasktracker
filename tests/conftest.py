@@ -25,7 +25,7 @@ def app() -> FastAPI:
 
 
 @pytest.fixture()
-def session() -> Generator[Session]:
+def session() -> Generator[Session, Any, None]:
     engine = get_engine()
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -37,7 +37,7 @@ def session() -> Generator[Session]:
 
 
 @pytest.fixture()
-def client(app, session) -> Generator[TestClient]:
+def client(app, session) -> Generator[TestClient, Any, None]:
     yield TestClient(app)
 
 
