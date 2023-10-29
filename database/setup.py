@@ -1,22 +1,23 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Engine
+from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from typing import Generator, Any
+from core.config import get_settings
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:admin@127.0.0.1:5432/tasktracker"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, future=True
-)
-
-SessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine
-)
 
 Base = declarative_base()
 
 
-async def get_db():
-    db = SessionLocal()
+def get_engine() -> Engine:
+    settings = get_settings()
+    return create_engine(str(settings.database_url), future=True)
+
+
+def get_session() -> Session:
+    return sessionmaker(autocommit=False, autoflush=False, bind=get_engine())()
+
+
+def get_db() -> Generator[Session, Any, None]:
+    db = get_session()
     try:
         yield db
     finally:
