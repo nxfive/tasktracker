@@ -28,13 +28,9 @@ def get_task_by_id(
     current_user: Annotated[UserBase, Depends(get_current_user)],
 ):
     task = crud_task.get_by_id(db, task_id=task_id)
-    if not task:
+    if not task or task.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
-        )
-    if task.user_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
         )
     return task
 
