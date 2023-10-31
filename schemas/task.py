@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from fastapi import Form
 from enum import Enum
+from datetime import datetime
 
 
 class Status(str, Enum):
@@ -16,26 +17,26 @@ class Priority(str, Enum):
 
 
 class TaskCreate(BaseModel):
-
     title: str
-    description: str
+    description: str | None = None
     status: str = Status.to_do
     priority: str = Priority.low
 
     model_config = ConfigDict(
-        extra="ignore",
-        use_enum_values=True,
-        validate_default=True
+        extra="ignore", use_enum_values=True, validate_default=True
     )
 
     @classmethod
-    def as_form(cls,
-                title: str = Form(),
-                description: str = Form(),
-                status: Status = Form(),
-                priority: Priority = Form(),
-                ):
-        return cls(title=title, description=description, status=status, priority=priority)
+    def as_form(
+        cls,
+        title: str = Form(),
+        description: str = Form(),
+        status: Status = Form(),
+        priority: Priority = Form(),
+    ):
+        return cls(
+            title=title, description=description, status=status, priority=priority
+        )
 
 
 class TaskUpdate(BaseModel):
@@ -43,19 +44,27 @@ class TaskUpdate(BaseModel):
     status: Status | None = None
     priority: Priority | None = None
 
-    model_config = ConfigDict(
-        use_enum_values=True,
-        extra="ignore"
-    )
+    model_config = ConfigDict(use_enum_values=True, extra="ignore")
 
     @classmethod
-    def as_form(cls,
-                title: str = Form(default=None),
-                description: str = Form(default=None),
-                status: Status = Form(default=None),
-                priority: Priority = Form(default=None),
-                ):
-        return cls(title=title, description=description, status=status, priority=priority)
+    def as_form(
+        cls,
+        title: str = Form(default=None),
+        description: str = Form(default=None),
+        status: Status = Form(default=None),
+        priority: Priority = Form(default=None),
+    ):
+        return cls(
+            title=title, description=description, status=status, priority=priority
+        )
+
+
+class User(BaseModel):
+    id: int
+    username: str
+
+    class Config:
+        orm_mode = True
 
 
 class TaskDisplay(BaseModel):
@@ -63,6 +72,10 @@ class TaskDisplay(BaseModel):
     description: str
     status: str
     priority: str
+    user_id: int
+    user: User
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
