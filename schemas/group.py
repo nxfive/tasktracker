@@ -6,9 +6,6 @@ from datetime import datetime
 class User(BaseModel):
     username: str
 
-    class Config:
-        orm_mode = True
-
 
 class GroupCreate(BaseModel):
     name: str
@@ -26,13 +23,20 @@ class GroupUpdate(BaseModel):
     members: List[User] | None = None
 
 
+class UserDisplay(BaseModel):
+    username: str
+
+    class Config:
+        orm_mode = True
+
+
 class GroupDisplay(BaseModel):
     name: str
     description: str
     visibility: bool
-    owner: User
-    admins: List[User] | None = None
-    members: List[User] | None = None
+    owner: UserDisplay
+    admins: List[UserDisplay] | None = None
+    members: List[UserDisplay] | None = None
     created_at: datetime
     updated_at: datetime
 
