@@ -2,21 +2,19 @@ from os import environ
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from auth.oauth2 import create_access_token
-from crud.task import crud_task
-from crud.group import crud_group
-from schemas.task import TaskCreate
-from schemas.group import GroupCreate
-from models.task import DbTask
-from models.group import DbGroup
-from typing import List
+from app.auth.oauth2 import create_access_token
+from app.crud.task import crud_task
+from app.crud.group import crud_group
+from app.schemas import TaskCreate
+from app.schemas import GroupCreate
+from app.models.task import DbTask
+from app.models.group import DbGroup
 from sqlalchemy.orm import Session
-from schemas.user import UserBase
-from typing import Generator, Any
+from typing import Generator, Any, List
 
 environ["env_state"] = "test"
-from database.setup import get_db, Base, get_engine, get_session  # noqa: E402
-from main import get_app  # noqa: E402
+from app.database.setup import Base, get_engine, get_session  # noqa: E402
+from app.main import get_app  # noqa: E402
 
 
 @pytest.fixture()
@@ -51,11 +49,9 @@ def test_user(client: TestClient):
         "password": "pass1234!",
         "confirm_password": "pass1234!",
     }
-    res = client.post("/user/", json=data)
+    res = client.post("/users/", json=data)
     assert res.status_code == 201
-    new_user = res.json()
-    new_user["password"] = data["password"]
-    return new_user
+    return res.json()
 
 
 @pytest.fixture()
@@ -68,11 +64,9 @@ def test_user2(client: TestClient):
         "password": "pass1234!",
         "confirm_password": "pass1234!",
     }
-    res = client.post("/user/", json=data)
+    res = client.post("/users/", json=data)
     assert res.status_code == 201
-    new_user = res.json()
-    new_user["password"] = data["password"]
-    return new_user
+    return res.json()
 
 
 @pytest.fixture()
@@ -139,5 +133,4 @@ def test_groups(test_user, test_user2, session):
     session.add_all(db_groups)
     session.commit()
     groups = session.query(DbGroup).all()
-
     return groups
