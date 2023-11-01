@@ -3,9 +3,10 @@ from typing import List, Annotated
 from app.schemas.task import TaskDisplay, TaskUpdate, TaskCreate
 from app.schemas.user import UserBase
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.crud import crud_task
+from app.database.setup import get_db
+from app.crud.task import crud_task
 from app.auth.oauth2 import get_current_user
+from app.exceptions.custom import EntityNotExist
 
 router = APIRouter(
     prefix="/tasks",
@@ -18,7 +19,7 @@ def get_all_tasks(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserBase, Depends(get_current_user)],
 ):
-    return crud_task.get_all(db, user_id=current_user.id)
+    return crud_task.get_all(db, attr_name="user_id", id=current_user.id)
 
 
 @router.get("/{task_id}", response_model=TaskDisplay)
@@ -27,11 +28,9 @@ def get_task_by_id(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserBase, Depends(get_current_user)],
 ):
-    task = crud_task.get_by_id(db, task_id=task_id)
+    task = crud_task.get_by_id(db, id=task_id)
     if not task or task.user_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
-        )
+        raise EntityNotExist(entity="task")
     return task
 
 
@@ -45,7 +44,7 @@ def create_task(
 
 
 @router.patch(
-    "/update/{task_id}", status_code=status.HTTP_200_OK, response_model=TaskDisplay
+    "/{task_id}/update", status_code=status.HTTP_200_OK, response_model=TaskDisplay
 )
 def update_task(
     task_id: int,
@@ -53,23 +52,19 @@ def update_task(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserBase, Depends(get_current_user)],
 ):
-    task = crud_task.get_by_id(db, task_id=task_id)
+    task = crud_task.get_by_id(db, id=task_id)
     if not task or task.user_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
-        )
+        raise EntityNotExist(entity="task")
     return crud_task.update(db, request, task_id=task.id, user_id=current_user.id)
 
 
-@router.delete("/delete/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{task_id}/delete", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(
     task_id: int,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserBase, Depends(get_current_user)],
 ):
-    task = crud_task.get_by_id(db, task_id=task_id)
+    task = crud_task.get_by_id(db, id=task_id)
     if not task or task.user_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
-        )
+        raise EntityNotExist(entity="task")
     return crud_task.delete(db, task)
