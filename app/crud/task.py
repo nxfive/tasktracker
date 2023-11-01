@@ -1,30 +1,18 @@
 from app.models.task import DbTask
 from app.schemas.task import TaskUpdate, TaskCreate
 from sqlalchemy.orm import Session
+from app.crud.base import CrudBase
 
 
-class CrudTask:
-
-    def __init__(self):
-        self.model = DbTask
-
-    def get_all_tasks(self, db: Session, *, user_id: int):
-        return db.query(self.model).filter_by(user_id=user_id).all()
-
-    def create_task(self, db: Session, request: TaskCreate, *, user_id: int):
-        new_task = self.model(
-            title=request.title,
-            description=request.description,
-            status=request.status,
-            priority=request.priority,
-            user_id=user_id
-        )
+class CrudTask(CrudBase[DbTask]):
+    def create(self, db: Session, request: TaskCreate, *, user_id: int):
+        new_task = self.model(**request.dict(exclude={"model_config"}), user_id=user_id)
         db.add(new_task)
         db.commit()
         db.refresh(new_task)
         return new_task
 
-    def update_task(self, db: Session, request: TaskUpdate, *, task_id: int, user_id: int):
+    def update(self, db: Session, request: TaskUpdate, *, task_id: int, user_id: int):
         task = db.query(self.model).filter_by(id=task_id).first()
         if task.user_id == user_id:
             request_data = request.dict(exclude_unset=True)
@@ -35,7 +23,7 @@ class CrudTask:
         db.refresh(task)
         return task
 
-    def delete_task(self, db: Session, *, task_id: int, user_id: int):
+    def delete(self, db: Session, *, task_id: int, user_id: int):
         task = db.query(self.model).filter_by(id=task_id).first()
         if user_id == task.user_id:
             db.delete(task)
@@ -43,4 +31,4 @@ class CrudTask:
         return {"message": "task deleted"}
 
 
-crud_task = CrudTask()
+crud_task = CrudTask(DbTask)
