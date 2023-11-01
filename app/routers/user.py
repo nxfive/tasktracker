@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.schemas.user import UserDisplay, UserUpdate, UserCreate, UserBase
 from app.crud.user import crud_user
 from typing import Annotated, List
+from app.exceptions.custom import EntityNotExist
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -22,13 +23,15 @@ def create_user(
     request: UserCreate,
     db: Annotated[Session, Depends(get_db)],
 ):
-    check_username = crud_user.get_by_username(db, username=request.username)
+    check_username = crud_user.get_by_attr(
+        db, attr_name="username", value=request.username
+    )
     if check_username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username is already taken",
         )
-    check_email = crud_user.get_by_email(db, email=request.email)
+    check_email = crud_user.get_by_attr(db, attr_name="email", value=request.email)
     if check_email:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -45,9 +48,7 @@ def get_user_by_id(
 ):
     user = crud_user.get_by_id(db, user_id=user_id)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        raise EntityNotExist(entity="user")
     return user
 
 
@@ -57,38 +58,32 @@ def get_user_by_username(
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserBase, Depends(get_current_user)],
 ):
-    user = crud_user.get_by_username(db, username=username)
+    user = crud_user.get_by_attr(db, attr_name="username", value=username)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        raise EntityNotExist(entity="user")
     return user
 
 
-@router.patch("/update/{user_id}")
+@router.patch("/{user_id}/update")
 def update_user(
     user_id: int,
     request: UserUpdate,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserBase, Depends(get_current_user)],
 ):
-    user = crud_user.get_by_id(db, user_id=user_id)
+    user = crud_user.get_by_id(db, id=user_id)
     if not user or user.id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        raise EntityNotExist(entity="user")
     return crud_user.update(db, request, user_id=user_id)
 
 
-@router.delete("/delete/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}/delete", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(
     user_id: int,
     db: Annotated[Session, Depends(get_db)],
     current_user: Annotated[UserBase, Depends(get_current_user)],
 ):
-    user = crud_user.get_by_id(db, user_id=user_id)
+    user = crud_user.get_by_id(db, id=user_id)
     if not user or user.id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        raise EntityNotExist(entity="user")
     return crud_user.delete(db, user_id=user_id)
