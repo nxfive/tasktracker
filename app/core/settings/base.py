@@ -22,6 +22,8 @@ class AppSettings(BaseAppSettings):
     openapi_url: str = "/openapi.json"
     title: str = "Tasktracker App"
     version: str = "0.0.0"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
     database_url: PostgresDsn
     secret_key: SecretStr
 
