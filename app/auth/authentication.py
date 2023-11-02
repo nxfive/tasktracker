@@ -10,25 +10,26 @@ from typing import Annotated
 from datetime import timedelta
 
 
-router = APIRouter(
-    tags=["authentication"]
-)
+router = APIRouter(tags=["authentication"])
 
 
 @router.post("/token")
-async def login(request: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]):
+def login(
+    request: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Annotated[Session, Depends(get_db)],
+):
     user = db.query(DbUser).filter_by(username=request.username).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Invalid credentials"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials"
         )
     if not Hash.verify(request.password, user.password):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Incorrect password"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials"
         )
-    access_token_expires = timedelta(minutes=oauth2.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(
+        minutes=oauth2.settings.access_token_expire_minutes
+    )
     access_token = oauth2.create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
