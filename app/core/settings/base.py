@@ -1,6 +1,7 @@
 from pydantic import BaseSettings, PostgresDsn, SecretStr
 from enum import Enum
 from typing import Any
+from decouple import config
 
 
 class EnvState(str, Enum):
@@ -10,7 +11,7 @@ class EnvState(str, Enum):
 
 
 class BaseAppSettings(BaseSettings):
-    env_state: EnvState = EnvState.prod
+    env_state: EnvState = config("ENV_STATE", default=EnvState.prod)
 
     class Config:
         env_file = ".env"
