@@ -1,8 +1,6 @@
 import logging
 from logging.config import dictConfig
-from app.core.config import get_settings
-
-settings = get_settings()
+from app.core.settings.base import AppSettings
 
 
 def obfuscated(email: str, obfuscated_length: int) -> str:
@@ -23,7 +21,7 @@ class EmailObfuscationFilter(logging.Filter):
         return True
 
 
-def configure_logging() -> None:
+def configure_logging(settings: AppSettings) -> None:
     dictConfig(
         {
             "version": 1,
