@@ -1,14 +1,15 @@
-from fastapi import APIRouter, HTTPException, status
+import logging
+from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from fastapi.param_functions import Depends
 from sqlalchemy.orm.session import Session
 from app.database.setup import get_db
 from app.models.user import DbUser
+from app.schemas.user import UserCreate, UserDisplay
+from app.crud.user import crud_user
 from app.database.hash import Hash
 from app.auth import oauth2
 from typing import Annotated
 from datetime import timedelta
-
 
 router = APIRouter(tags=["authentication"])
 
@@ -38,3 +39,27 @@ def login(
         "token_type": "bearer",
         "user_id": user.id,
     }
+
+
+@router.post(
+    "/register", status_code=status.HTTP_201_CREATED, response_model=UserDisplay
+)
+def register(
+    request: UserCreate,
+    db: Annotated[Session, Depends(get_db)],
+):
+    check_username = crud_user.get_by_attr(
+        db, attr_name="username", value=request.username
+    )
+    if check_username:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username is already taken",
+        )
+    check_email = crud_user.get_by_attr(db, attr_name="email", value=request.email)
+    if check_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This email address is already associated with an account",
+        )
+    return crud_user.create(db, request)
