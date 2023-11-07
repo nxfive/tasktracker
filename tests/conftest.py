@@ -5,8 +5,8 @@ from fastapi.testclient import TestClient
 from app.auth.oauth2 import create_access_token
 from app.crud.task import crud_task
 from app.crud.group import crud_group
-from app.schemas import TaskCreate
-from app.schemas import GroupCreate
+from app.schemas.task import TaskCreate
+from app.schemas.group import GroupCreate
 from app.models.task import DbTask
 from app.models.group import DbGroup
 from sqlalchemy.orm import Session
@@ -49,7 +49,7 @@ def test_user(client: TestClient):
         "password": "pass1234!",
         "confirm_password": "pass1234!",
     }
-    res = client.post("/users/", json=data)
+    res = client.post("/register", json=data)
     assert res.status_code == 201
     return res.json()
 
@@ -64,7 +64,7 @@ def test_user2(client: TestClient):
         "password": "pass1234!",
         "confirm_password": "pass1234!",
     }
-    res = client.post("/users/", json=data)
+    res = client.post("/register", json=data)
     assert res.status_code == 201
     return res.json()
 
@@ -78,6 +78,12 @@ def token(test_user):
 def authorize_client(client, token):
     client.headers = {**client.headers, "Authorization": f"Bearer {token}"}
     return client
+
+
+@pytest.fixture()
+def logged_user_token(client, test_user) -> str:
+    res = client.post("/token", json=test_user)
+    return res.json()["access_token"]
 
 
 @pytest.fixture()

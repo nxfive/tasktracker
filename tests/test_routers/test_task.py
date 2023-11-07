@@ -41,6 +41,12 @@ def test_unauthorized_client_delete_task(client, session, test_tasks):
 # TEST AUTHORIZED CLIENT
 
 
+def test_get_all_tasks_empty(authorize_client):
+    res = authorize_client.get("/tasks")
+    # assert res.json() == [test_tasks]
+    assert res.status_code == 200
+
+
 def test_get_all_tasks(authorize_client, test_tasks):
     res = authorize_client.get("/tasks")
     # assert res.json() == [test_tasks]

@@ -19,7 +19,13 @@ class GroupUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
     visibility: bool | None = None
+
+
+class GroupUpdateAdmins(BaseModel):
     admins: List[User] | None = None
+
+
+class GroupUpdateMembers(BaseModel):
     members: List[User] | None = None
 
 

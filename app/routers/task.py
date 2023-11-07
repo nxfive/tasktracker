@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
 from typing import List, Annotated
+
 from app.schemas.task import TaskDisplay, TaskUpdate, TaskCreate
 from app.schemas.user import UserBase
-from sqlalchemy.orm import Session
 from app.database.setup import get_db
 from app.crud.task import crud_task
 from app.auth.oauth2 import get_current_user
@@ -43,9 +44,7 @@ def create_task(
     return crud_task.create(db, request, user_id=current_user.id)
 
 
-@router.patch(
-    "/{task_id}/update", status_code=status.HTTP_200_OK, response_model=TaskDisplay
-)
+@router.patch("/{task_id}/update", response_model=TaskDisplay)
 def update_task(
     task_id: int,
     request: TaskUpdate,

@@ -6,7 +6,7 @@ from app.crud.base import CrudBase
 
 
 class CrudAdmin(CrudBase[DbAdmin]):
-    def create_admin(self, db: Session, request: AdminCreate) -> DbAdmin:
+    def create(self, db: Session, request: AdminCreate) -> DbAdmin:
         new_admin = self.model(
             **request.dict(exclude={"password", "confirm_password"}),
             password=Hash.bcrypt(request.password),
@@ -16,7 +16,7 @@ class CrudAdmin(CrudBase[DbAdmin]):
         db.refresh(new_admin)
         return new_admin
 
-    def update_admin(
+    def update(
         self, db: Session, request: AdminUpdate, *, admin_id: int
     ) -> DbAdmin | None:
         admin = db.query(self.model).filter_by(id=admin_id).first()

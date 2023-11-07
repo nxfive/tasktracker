@@ -1,8 +1,11 @@
+import logging
 from typing import Generic, TypeVar, Type, List, Union
 from app.database.setup import Base
 from sqlalchemy.orm import Session
 
 ModelType = TypeVar("ModelType", bound=Base)
+
+logger = logging.getLogger(__name__)
 
 
 class CrudBase(Generic[ModelType]):
@@ -27,5 +30,10 @@ class CrudBase(Generic[ModelType]):
         self, db: Session, *, attr_name: str, value: Union[str, int]
     ) -> ModelType | None:
         condition = {str(getattr(self.model, attr_name, "")).split(".")[1]: value}
+        logger.debug({**condition})
+        logger.debug(
+            f"Fetching {self.__class__.__name__[4:].lower()} from database",
+            extra={**condition},
+        )
         if "" not in condition:
             return db.query(self.model).filter_by(**condition).first()
