@@ -1,26 +1,26 @@
 from fastapi import APIRouter, Depends
 from typing import Annotated
-from app.database.setup import get_db
+from app.database import get_db
 from sqlalchemy.orm import Session
 from app.schemas.admin import AdminDisplay, AdminUserDisplay, AdminCreate, AdminUpdate
 from typing import List
-from app.crud.admin import crud_admin
-from app.auth.oauth2 import get_superuser
-from app.schemas.admin import AdminBase
+from app.crud import crud_admin
 
-router = APIRouter(prefix="/admin", tags=["admin"])
+
+router = APIRouter(
+    prefix="/admin",
+    tags=["admin"]
+)
 
 
 @router.get("/", response_model=List[AdminDisplay])
-def get_all_admins(
-    db: Annotated[Session, Depends(get_db)],
-    admin: Annotated[AdminBase, Depends(get_superuser)],
-):
-    return crud_admin.get_all(db)
+def get_all_admins(db: Annotated[Session, Depends(get_db)]):
+    return crud_admin.get_all_admins(db)
 
 
 @router.post("/", response_model=AdminDisplay)
-def create_admin(db: Annotated[Session, Depends(get_db)], request: AdminCreate):
+def create_admin(db: Annotated[Session, Depends(get_db)],
+                 request: AdminCreate):
     return crud_admin.create_admin(db, request)
 
 
@@ -35,7 +35,7 @@ def get_all_users(db: Annotated[Session, Depends(get_db)]):
 
 
 @router.post("/me/{admin_id}/update", response_model=AdminDisplay)
-def update(
-    admin_id: int, db: Annotated[Session, Depends(get_db)], request: AdminUpdate
-):
+def update(admin_id: int,
+           db: Annotated[Session, Depends(get_db)],
+           request: AdminUpdate):
     return crud_admin.update(db, request, admin_id=admin_id)

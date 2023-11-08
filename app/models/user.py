@@ -1,4 +1,4 @@
-from app.database.setup import Base
+from app.database import Base
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from app.models.group import group_admins, group_members

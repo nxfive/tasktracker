@@ -18,21 +18,14 @@ class AdminCreate(BaseModel):
     confirm_password: str
 
     @classmethod
-    def as_form(
-        cls,
-        name: str = Form(),
-        surname: str = Form(),
-        email: EmailStr = Form(),
-        password: str = Form(),
-        confirm_password: str = Form(),
-    ):
-        return cls(
-            name=name,
-            surname=surname,
-            email=email,
-            password=password,
-            confirm_password=confirm_password,
-        )
+    def as_form(cls,
+                name: str = Form(),
+                surname: str = Form(),
+                email: EmailStr = Form(),
+                password: str = Form(),
+                confirm_password: str = Form()
+                ):
+        return cls(name=name, surname=surname, email=email, password=password, confirm_password=confirm_password)
 
     @classmethod
     @root_validator
@@ -52,19 +45,13 @@ class AdminUpdate(BaseModel):
     confirm_password: str | None = None
 
     @classmethod
-    def as_form(
-        cls,
-        email: EmailStr = Form(),
-        old_password: str = Form(),
-        new_password: str = Form(),
-        confirm_password: str = Form(),
-    ):
-        return cls(
-            email=email,
-            old_password=old_password,
-            new_password=new_password,
-            confirm_password=confirm_password,
-        )
+    def as_form(cls,
+                email: EmailStr = Form(),
+                old_password: str = Form(),
+                new_password: str = Form(),
+                confirm_password: str = Form()
+                ):
+        return cls(email=email, old_password=old_password, new_password=new_password, confirm_password=confirm_password)
 
     @classmethod
     @root_validator(pre=True)
@@ -72,7 +59,7 @@ class AdminUpdate(BaseModel):
         Validate().validate_password_change(
             old=values.get("old_password", 0),
             new=values.get("new_password", 0),
-            confirm=values.get("confirm_password", 0),
+            confirm=values.get("confirm_password", 0)
         )
         return values
 
@@ -97,7 +84,3 @@ class AdminUserDisplay(BaseModel):
     account: str
     created_at: datetime
     updated_at: datetime
-
-
-class AdminBase(BaseModel):
-    id: int

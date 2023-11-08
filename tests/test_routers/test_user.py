@@ -99,10 +99,9 @@ def test_get_all_users(authorize_client, test_user2):
     assert res.status_code == 200
 
 
-#
-# def test_get_user_by_id(authorize_client, test_user2):
-#     res = authorize_client.get(f"/users/2")
-#     assert res.status_code == 200
+def test_get_user_by_id(authorize_client, test_user2):
+    res = authorize_client.get(f"/users/2")
+    assert res.status_code == 200
 
 
 def test_create_user(
@@ -133,7 +132,7 @@ def test_update_user(authorize_client, session, test_user2):
 
 
 def test_delete_user(authorize_client, session, test_user2):
-    res = authorize_client.delete(f"/users/1/delete/")
+    res = authorize_client.delete(f"/users/delete/1")
     assert res.status_code == 204
 
 

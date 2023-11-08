@@ -28,7 +28,7 @@ class UserCreate(BaseModel):
         name: str = Form(),
         surname: str = Form(),
         username: str = Form(),
-        email: EmailStr = Form(),
+        email: str = Form(),
         password: str = Form(),
         confirm_password: str = Form(),
     ):
@@ -58,7 +58,7 @@ class UserUpdate(BaseModel):
     @classmethod
     def as_form(
         cls,
-        email: EmailStr = Form(),
+        email: str = Form(),
         old_password: str = Form(),
         new_password: str = Form(),
         confirm_password: str = Form(),
@@ -95,7 +95,3 @@ class UserDisplay(BaseModel):
 class UserCheck(BaseModel):
     id: int
     role: Role
-
-
-class UserGet(BaseModel):
-    username: str
